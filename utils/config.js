@@ -6,11 +6,12 @@ export const defaultLabels = {
     next: 'Next',
     month: 'Month',
     week: 'Week',
+    schedule: 'Schedule',
     day: 'Day',
     all_day: 'all day'
 };
 
-export const defaultViews = ['month', 'week', 'day'];
+export const defaultViews = ['month', 'week', 'day', 'schedule'];
 
 let config = {
     locale: 'en',
@@ -24,7 +25,19 @@ let config = {
     initialView: 'month',
     use12: false,
     showTimeMarker: true,
-    eventDisplay: null
+    eventDisplay: null,
+    teams: [
+        {
+            id: 1,
+            name: 'Japra',
+            type: 'Supplement'
+        },
+        {
+            id: 2,
+            name: 'Narto',
+            type: 'Supplement'
+        }
+    ]
 };
 
 export default config

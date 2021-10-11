@@ -143,6 +143,7 @@
 
   &.v-cal-content--month,
   &.v-cal-content--week,
+  &.v-cal-content--schedule,
   &.v-cal-content--day {
 
     .v-cal-days .v-cal-day {
@@ -217,6 +218,7 @@
   }
 
   &.v-cal-content--month .v-cal-day,
+  &.v-cal-content--schedule .v-cal-day,
   &.v-cal-content--week .v-cal-day {
 
     &.is-disabled {
@@ -226,6 +228,7 @@
   }
 
   &.v-cal-content--week,
+  &.v-cal-content--schedule,
   &.v-cal-content--day {
     .v-cal-hour.all-day,
     .v-cal-day__hour-block.all-day {
@@ -234,6 +237,7 @@
   }
 
   &.v-cal-content--week .v-cal-times,
+  &.v-cal-content--schedule .v-cal-times,
   &.v-cal-content--day .v-cal-times {
     background: $v-cal-times-bg;
     font-size: $v-cal-times-font-size;
@@ -254,6 +258,7 @@
   }
 
   &.v-cal-content--week .v-cal-days .v-cal-days__wrapper,
+  &.v-cal-content--schedule .v-cal-days .v-cal-days__wrapper,
   &.v-cal-content--day .v-cal-days .v-cal-days__wrapper {
     display: flex;
     flex-grow: 1;
@@ -342,6 +347,7 @@
   }
 
   &.v-cal-content--week .v-cal-day,
+  &.v-cal-content--schedule .v-cal-day,
   &.v-cal-content--day .v-cal-day {
 
     .v-cal-day__hour-block.is-now.has-marker::after,
@@ -382,6 +388,26 @@
   }
 
   &.v-cal-content--week {
+    .v-cal-weekdays {
+      max-height: 3rem;
+      text-transform: none;
+
+      .v-cal-weekdays__padding {
+        visibility: hidden;
+      }
+
+      .v-cal-weekday__wrapper {
+        display: flex;
+        flex-grow: 1;
+
+        .v-cal-weekday-item {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+
+  &.v-cal-content--schedule {
     .v-cal-weekdays {
       max-height: 3rem;
       text-transform: none;
