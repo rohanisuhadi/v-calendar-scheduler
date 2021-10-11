@@ -14,6 +14,9 @@ export default {
         events: {
             type: Array
         },
+        teams: {
+            type: Array
+        },
         use12: {
             type: Boolean,
             required: true
@@ -33,6 +36,9 @@ export default {
             this.buildCalendar();
         },
         events() {
+            this.buildCalendar();
+        },
+        teams() {
             this.buildCalendar();
         }
     }

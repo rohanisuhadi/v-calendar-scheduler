@@ -38,16 +38,21 @@
     import Month from './views/Month';
     import Week from './views/Week';
     import Day from './views/Day';
+    import Schedule from './views/Schedule';
 
     import EventDialog from './dialog';
 
     export default {
         name: "VueScheduler",
-        components: { Month, Week, Day },
+        components: { Month, Week, Day, Schedule },
         props: {
             events: {
                 type: Array,
                 default: () => []
+            },
+            teams: {
+                type: Array,
+                default: () => config.teams
             },
             showTodayButton: {
                 type: Boolean,
@@ -170,71 +175,6 @@
                             this.events.push(event._e);
                             this.$emit('event-created', event._e);
                         });
-
-                    // EventDialog.show({
-                    //     title: 'Custom dialog',
-                    //     createButtonLabel: 'Save'
-                    // }, [
-                    //     // {
-                    //     //     name: 'text_field',
-                    //     //     label: 'Text field'
-                    //     // },
-                    //     // {
-                    //     //     name: 'email',
-                    //     //     type: 'email'
-                    //     // },
-                    //     // {
-                    //     //     name: 'password',
-                    //     //     type: 'password'
-                    //     // },
-                    //     // {
-                    //     //     name: 'is_checked',
-                    //     //     type: 'checkbox'    //  Unsupported for now
-                    //     // },
-                    //     // {
-                    //     //     name: 'check_choices[]',
-                    //     //     type: 'checkbox',           //  Unsupported for now
-                    //     //     choices: [
-                    //     //         { label: 'Choice 1', value: 'choice1' },
-                    //     //         { label: 'Choice 2', value: 'choice2' }
-                    //     //     ]
-                    //     // },
-                    //     // {
-                    //     //     name: 'radio_choices',
-                    //     //     type: 'radio',                //  Unsupported for now
-                    //     //     choices: [
-                    //     //         { label: 'Radio 1', value: 'rad1' },
-                    //     //         { label: 'Radio 2', value: 'rad2' }
-                    //     //     ]
-                    //     // },
-                    //     // {
-                    //     //     name: 'textarea',
-                    //     //     type: 'textarea'
-                    //     // }
-                    //     {
-                    //         name: 'single-select',
-                    //         type: 'select',                                              //  Unsupported for now
-                    //         choices: [
-                    //             { value: 'single1', label: 'Single list 1' },
-                    //             { value: 'single2', label: 'Single list 2' },
-                    //             { value: 'single3', label: 'Single list 3' },
-                    //             { value: 'single4', label: 'Single list 4' },
-                    //             { value: 'single5', label: 'Single list 5' }
-                    //         ]
-                    //     },
-                    //     {
-                    //         name: 'multiple-select',
-                    //         type: 'select',                                                  //  Unsupported for now
-                    //         choices: [
-                    //             { value: 'multiple1', label: 'Multiple list 1' },
-                    //             { value: 'multiple2', label: 'Multiple list 2' },
-                    //             { value: 'multiple3', label: 'Multiple list 3' },
-                    //             { value: 'multiple4', label: 'Multiple list 4' },
-                    //             { value: 'multiple5', label: 'Multiple list 5' }
-                    //         ],
-                    //         multiple: true
-                    //     }
-                    // ]);
                 }
             },
             bindEvents() {
@@ -254,10 +194,12 @@
                 this.activeDate = moment(this.today);
             },
             prev() {
-                this.activeDate = moment(this.activeDate.subtract(1, this.activeView + 's'));
+                const page = (this.activeView == 'schedule') ? 'week' : this.activeView;
+                this.activeDate = moment(this.activeDate.subtract(1, page + 's'));
             },
             next() {
-                this.activeDate = moment(this.activeDate.add(1, this.activeView + 's'));
+                const page = (this.activeView == 'schedule') ? 'week' : this.activeView;
+                this.activeDate = moment(this.activeDate.add(1,  page+ 's'));
             },
             switchView(view) {
                 this.activeView = view;
@@ -308,12 +250,16 @@
                     minDate: this.minDate,
                     maxDate: this.maxDate,
                     use12: this.use12,
+                    teams: this.teams,
                     events: this.newEvents.filter( event => {
-                        return event.date.isSame(this.activeDate, this.activeView);
+                        if( this.activeView == 'schedule' )
+                            return event.date.isSame(this.activeDate, 'week');
+                        else 
+                            return event.date.isSame(this.activeDate, this.activeView);
                     })
                 };
 
-                if ( this.activeView === 'week' || this.activeView === 'day') {
+                if ( this.activeView === 'week' || this.activeView === 'schedule' || this.activeView === 'day') {
                     props.allDayLabel = this.labels.all_day;
                     props.timeRange = this.timeRange;
                     props.showTimeMarker = this.showTimeMarker;
@@ -329,7 +275,7 @@
                     return this.activeDate.format('MMMM YYYY');
                 }
 
-                if ( this.activeView === 'week' ) {
+                if ( this.activeView === 'week' || this.activeView === 'schedule' ) {
                     const weekStart = moment(this.activeDate).day(0);
                     const weekEnd = moment(this.activeDate).day(6);
                     return weekStart.format('MMM D') + ' - ' + weekEnd.format('MMM D');
