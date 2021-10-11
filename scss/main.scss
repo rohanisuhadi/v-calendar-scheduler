@@ -231,7 +231,6 @@
   }
 
   &.v-cal-content--week,
-  &.v-cal-content--schedule,
   &.v-cal-content--day {
     .v-cal-hour.all-day,
     .v-cal-day__hour-block.all-day {
@@ -240,7 +239,6 @@
   }
 
   &.v-cal-content--week .v-cal-times,
-  &.v-cal-content--schedule .v-cal-times,
   &.v-cal-content--day .v-cal-times {
     background: $v-cal-times-bg;
     font-size: $v-cal-times-font-size;
@@ -271,6 +269,10 @@
 
       &.is-today {
         background-color: $v-cal-day-today-bg;
+      }
+
+      &.is-sunday {
+        background-color: $v-cal-day-sunday-bg;
       }
 
       &.is-different-month {
@@ -426,6 +428,26 @@
         .v-cal-weekday-item {
           flex-grow: 1;
         }
+      }
+    }
+  }
+
+  &.v-cal-content--schedule .v-cal-times {
+    background: $v-cal-times-bg;
+    font-size: $v-cal-times-font-size;
+    font-weight: normal;
+    max-width: 150px;
+    border-right: 1px solid $v-cal-times-border-color;
+
+    .v-cal-hour {
+      padding: 15px;
+
+      &.is-now {
+        font-weight: bold;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $v-cal-times-border-color;
       }
     }
   }

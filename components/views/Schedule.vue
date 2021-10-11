@@ -1,12 +1,6 @@
 <template>
   <section class="v-cal-content">
     <div class="v-cal-weekdays">
-      <!-- <div class="v-cal-weekdays__padding"> -->
-        <!-- <div class="v-cal-times"> -->
-          <!--Fake, hidden time-->
-          <!-- <div class="v-cal-hour">00:00 <template v-if="use12">PM</template></div> -->
-        <!-- </div> -->
-      <!-- </div> -->
       <div class="v-cal-weekday__wrapper">
         <div class="v-cal-team">Team</div>
         <div class="v-cal-weekday-item" v-for="day in days">{{ day.d.format('ddd DD/MM') }}</div>
