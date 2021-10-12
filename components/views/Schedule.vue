@@ -11,8 +11,9 @@
         <div class="v-cal-hour" v-for="team in teams">{{ team.name }} ({{ team.type }})</div>
       </div>
       <div class="v-cal-days__wrapper">
-        <div class="v-cal-day v-cal-day--schedule" v-for="day in days" :class="{ 'is-today': day.isToday, 'is-disabled': day.isDisabled, 'is-sunday' : day.isSunday }">
-          <div class="v-cal-day__hour-block all-day" @click="timeClicked({ date: day.d.toDate(), time: null })">
+        <div class="v-cal-day v-cal-day--week" v-for="day in days" :class="{ 'is-today': day.isToday, 'is-disabled': day.isDisabled, 'is-sunday' : day.isSunday }">
+
+          <!-- <div class="v-cal-day__hour-block all-day" @click="timeClicked({ date: day.d.toDate(), time: null })">
             <span class="v-cal-day__hour-block-fill">00:00 <template v-if="use12">PM</template></span>
             <div class="v-cal-day__hour-content">
               <div class="v-cal-event-list" :class="{'tiny-events': day.events.filter(e => !e.startTime).length > 2}">
@@ -27,24 +28,16 @@
 
               </div>
             </div>
-          </div>
-
-          <!-- <div class="v-cal-day__hour-block" @click="timeClicked({ date: day.d.toDate(), time: time.hour() })" :class="[ time.hour() === now.hour() ? 'is-now' : '', hourClass ]" v-for="time in day.availableTimes">
-            <span class="v-cal-day__hour-block-fill">{{ time | formatTime(use12) }}</span>
-            <div class="v-cal-day__hour-content">
-              <div class="v-cal-event-list">
-                <event-item
-                        v-for="event, index in day.events"
-                        :key="index"
-                        :event="event"
-                        :use12="use12"
-                        v-if="event.startTime && time.hours() === event.startTime.hours()">
-                </event-item>
-              </div>
-            </div>
           </div> -->
 
+          <div class="v-cal-day__hour-block"  v-for="time in teams">
+            <span class="v-cal-day__hour-block-fill">{{ time }}</span>
+            <div class="v-cal-day__hour-content text-center">
+              {{ time.type }}
+            </div>
+          </div>
         </div>
+        
       </div>
     </div>
   </section>
@@ -64,7 +57,6 @@
         data() {
             return {
                 days: [],
-                // newEvents: JSON.parse(JSON.stringify(this.events))
             }
         },
         mounted() {
@@ -75,16 +67,17 @@
                 EventBus.$emit('time-clicked', data)
             },
             buildCalendar() {
-                //  Reset events
-                // this.newEvents = JSON.parse(JSON.stringify(this.events));
 
                 this.days = [];
 
                 let now = moment();
 
                 let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
-                let w = temp.week();
-
+                
+                // let w = temp.week();
+                // console.log(temp.format('ddd  DD/MM'));
+                let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add(7, 'day').week();
+                // console.log(w);
                 this.days = [];
 
                 do {
@@ -96,24 +89,35 @@
                             if ( !b.startTime ) return 1;
                             return moment(a.startTime).format('HH') - moment(b.startTime).format('HH');
                         });
+                    
                     const mappedEvents = dayEvents.map( event => {
                         event.overlaps = dayEvents.filter( e => moment(event.startTime).isBetween( moment(e.startTime), moment(e.endTime) ) && e !== event ).length;
                         return event;
                     });
 
+                    // console.log(mappedEvents);
+
                     let newDay = {
                         d: day,
                         isPast: temp.isBefore( now, 'day' ),
                         isToday: temp.isSame( now, 'day' ),
-                        isSunday: (day.weekday() < 1) ? true : false,
+                        isSunday: (day.format('ddd') == 'Sun') ? true : false,
                         isDisabled: this.isDayDisabled(temp),
                         availableTimes: this.times.map( time => moment(time).dayOfYear( day.dayOfYear() ) ),
                         events: mappedEvents
                     };
+
                     this.days.push(newDay);
 
                     temp.add( 1, 'day' );
-                } while ( temp.week() === w );
+
+                    console.log(temp.format('ddd'));
+
+                    console.log(temp.week());
+                    
+                    console.log(w);
+
+                } while ( temp.week() <= w );
             }
         },
         watch: {

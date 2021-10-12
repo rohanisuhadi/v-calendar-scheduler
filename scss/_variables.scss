@@ -35,10 +35,10 @@ $v-cal-days-head-font-weight: bold !default;
 $v-cal-day-bg: $white !default;
 $v-cal-day-border-color: #EAF0F4 !default;
 
-$v-cal-day-diff-month-color: rgba(67, 66, 93, .3) !default;
+$v-cal-day-diff-month-color: rgba(66, 93, 72, 0.3) !default;
 
-$v-cal-day-today-bg: #F5F6FA !default;
-$v-cal-day-sunday-bg: #fd8368 !default;
+$v-cal-day-today-bg: rgba(59, 233, 43, 0.3) !default;
+$v-cal-day-sunday-bg: rgba(238, 46, 46, 0.3) !default;
 
 $v-cal-day-disabled-bg: #f0f0f0 !default;
 $v-cal-day-disabled-color: #b0b0b0 !default;
