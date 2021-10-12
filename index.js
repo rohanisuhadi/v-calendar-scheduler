@@ -4,6 +4,7 @@
 
 import config, { setOptions } from './utils/config'
 import VueScheduler from './components/VueScheduler';
+import MyVueCalender from './components/MyVueCalender';
 
 import moment from 'moment';
 
@@ -14,5 +15,6 @@ export default {
     moment.locale(config.locale);
 
     Vue.component('vue-scheduler', VueScheduler);
+    Vue.component('my-vue-calender', MyVueCalender);
   }
 }

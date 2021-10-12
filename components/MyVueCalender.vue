@@ -1,0 +1,254 @@
+<template>
+  <div class="bg-white">
+    <div class="mb-2 v-cal-header__actions p-3">
+      <div class="actions-left">
+        <button class="v-cal-button" @click="goToToday">Today</button>
+        <button class="v-cal-button" @click="prev">Back</button>
+        <button class="v-cal-button" @click="next">Next</button>
+      </div>
+    </div>
+    <div class="rounded body_page">
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th v-for="(day, index) in days" v-bind:key="index" :class="{ 'bg-green-600': day.isToday, 'bg-red-400' : day.isSunday }">{{ day.d.format('ddd DD/MM') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(team, index) in teams" v-bind:key="index">
+            <td>{{team.name}}</td>
+            <td v-for="(day, index) in days" v-bind:key="index" :class="{ 'bg-green-600': day.isToday, 'bg-red-400' : day.isSunday }">
+              {{ (team.dates.includes( day.d.format('YYYY-MM-DD') ) ) ? day.d.format('YY-MM-DD') : '' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+<script>
+import moment from 'moment';
+import { EventBus } from './EventBus';
+import EventItem from './EventItem';
+import IsView from './mixins/IsView';
+import ShowsTimes from './mixins/ShowsTimes';
+import Event from '../model/Event';
+import config from '../utils/config';
+import { defaultLabels, defaultViews } from '../utils/config';
+
+export default {
+  props: {
+      events: {
+          type: Array,
+          default: () => []
+      },
+      teams: {
+          type: Array,
+          default: () => config.teams
+      },
+      showTodayButton: {
+          type: Boolean,
+          default: () => config.showTodayButton
+      },
+      minDate: {
+          type: [Date, Object],
+          default: () => config.minDate
+      },
+      maxDate: {
+          type: [Date, Object],
+          default: () => config.maxDate
+      },
+      labels: {
+          type: Object,
+          default: () => config.labels,
+          validator(value) {
+              for (const labelKey in defaultLabels ) {
+                  if ( !value.hasOwnProperty(labelKey) ) {
+                      console.error('Missing prop label: ' + labelKey);
+                      return false;
+                  }
+              }
+              return true;
+          }
+      },
+      timeRange: {
+          type: Array,
+          default: () => config.timeRange,
+          validator(value) {
+              if ( value.length !== 2 || value[0] > value[1] || value[0] < 0 || value[1] > 23) {
+                  console.error('Invalid time range.');
+                  return false;
+              }
+              return true;
+          }
+      },
+      availableViews: {
+          type: Array,
+          default: () => config.availableViews,
+          validator (value) {
+              const possible = defaultViews;
+              let error = false;
+              value.forEach(view => {
+                  if ( possible.indexOf(view) === -1 ) {
+                      console.error('Invalid view: ' + view);
+                      error = true;
+                  }
+              });
+              return !error;
+          }
+      },
+      initialDate: {
+          type: [Date, Object],
+          default: () => config.initialDate
+      },
+      initialView: {
+          type: String,
+          default: () => config.initialView
+      },
+      use12: {
+          type: Boolean,
+          default: () => config.use12
+      },
+      showTimeMarker: {
+          type: Boolean,
+          default: () => config.showTimeMarker
+      },
+      eventDisplay: {
+          type: [String, Function],
+          default: () => config.eventDisplay
+      },
+      disableDialog: {
+          type: Boolean,
+          default: false
+      },
+      eventDialogConfig: {
+          type: Object,
+          default: () => { return {} }
+      }
+  },
+  mixins: [ IsView, ShowsTimes ],
+  components: { EventItem },
+  data () {
+    return {
+      days: [],
+      today: moment(),
+      activeView: 'week',
+      activeDate: null,
+    }
+  },
+  mounted() {
+    this.buildCalendar();
+    this.activeDate = moment(this.initialDate);
+  },
+  watch: {
+    initialDate() {
+      this.activeDate = moment(this.initialDate);
+    },
+  },
+  methods: {
+    buildCalendar() {
+
+      this.days = [];
+
+      let now = moment();
+
+      let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
+      
+      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).week();
+      
+      this.days = [];
+
+      do {
+          const day = moment(temp);
+
+          const dayEvents = this.events.filter( e => e.date.isSame(day, 'day') )
+              .sort( (a, b) => {
+                  if ( !a.startTime ) return -1;
+                  if ( !b.startTime ) return 1;
+                  return moment(a.startTime).format('HH') - moment(b.startTime).format('HH');
+              });
+          
+          const mappedEvents = dayEvents.map( event => {
+              event.overlaps = dayEvents.filter( e => moment(event.startTime).isBetween( moment(e.startTime), moment(e.endTime) ) && e !== event ).length;
+              return event;
+          });
+
+          let newDay = {
+              d: day,
+              isPast: temp.isBefore( now, 'day' ),
+              isToday: temp.isSame( now, 'day' ),
+              isSunday: (day.format('ddd') == 'Sun') ? true : false,
+              isDisabled: this.isDayDisabled(temp),
+              availableTimes: this.times.map( time => moment(time).dayOfYear( day.dayOfYear() ) ),
+              events: mappedEvents
+          };
+
+          this.days.push(newDay);
+
+          temp.add( 1, 'day' );
+
+          console.log(temp.format('ddd'));
+
+          console.log(temp.week());
+          
+          console.log(w);
+
+      } while ( temp.week() <= w );
+    },
+    goToToday() {
+      this.activeDate = moment(this.today);
+    },
+    prev() {
+      const page = this.activeView;
+      this.activeDate = moment(this.activeDate.subtract(1, page + 's'));
+    },
+    next() {
+      const page = this.activeView;
+      this.activeDate = moment(this.activeDate.add(1,  page+ 's'));
+    },
+  }
+}
+</script>
+<style scoped>
+.body_page{
+  overflow:auto;
+  width:100%;
+  height:100vh;
+}
+
+th {
+  border: 1px solid #EAF0F4;
+  width: 170px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  text-transform: none;
+  color:#A3A6B4;
+}
+th {background-color:#f4f8fb;}
+
+table {
+  table-layout: fixed;
+  width:100%;
+}
+tbody td {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border: 1px solid #EAF0F4;
+}
+td:first-child, th:first-child {
+  position:sticky;
+  left:0;
+  z-index:1;
+  /* background-color:#f4f8fb; */
+}
+thead tr th {
+  position:sticky;
+  top:0;
+}
+th:first-child {
+  z-index:2;background-color:#f9fbfd;
+}
+</style>

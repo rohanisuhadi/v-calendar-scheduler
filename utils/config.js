@@ -28,14 +28,18 @@ let config = {
     eventDisplay: null,
     teams: [
         {
-            id: 1,
-            name: 'Japra',
-            type: 'Supplement'
+          name: 'Rohani Suhadi',
+          type: 'Beginner',
+          dates: [
+            '2021-10-11', '2021-10-12'
+          ]
         },
         {
-            id: 2,
-            name: 'Narto',
-            type: 'Supplement'
+            name: 'Supriyanto',
+            type: 'Beginner',
+            dates: [
+              '2021-10-11', '2021-10-12', '2021-10-16'
+            ]
         }
     ]
 };
