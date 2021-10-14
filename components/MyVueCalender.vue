@@ -174,7 +174,7 @@ export default {
 
       let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
       
-      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 7, 'day' ).week();
+      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 14, 'day' ).week();
       
       this.days = [];
 
