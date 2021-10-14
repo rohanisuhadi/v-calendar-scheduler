@@ -6,6 +6,9 @@
         <button class="v-cal-button" @click="prev">Back</button>
         <button class="v-cal-button" @click="next">Next</button>
       </div>
+      <div class="v-cal-header__title-bar">
+        <h3 class="v-cal-header__title">{{ calendarTitle }}</h3>
+      </div>
     </div>
     <div class="rounded body_page">
       <table>
@@ -17,9 +20,9 @@
         </thead>
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
-            <td>{{team.name}}</td>
-            <td v-for="(day, index) in days" v-bind:key="index" :class="{ 'bg-green-600': day.isToday, 'bg-red-400' : day.isSunday }">
-              {{ (team.dates.includes( day.d.format('YYYY-MM-DD') ) ) ? day.d.format('YY-MM-DD') : '' }}
+            <td>{{team.name}} ({{team.member}})</td>
+            <td v-for="(day, index) in days" v-bind:key="index" :class="{ 'bg-green-600': day.isToday, 'bg-orange-600' : (activeDate.format('YYYY-MM-DD') == day.d.format('YYYY-MM-DD')), 'bg-red-400' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
+              {{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}
             </td>
           </tr>
         </tbody>
@@ -31,7 +34,7 @@
 import moment from 'moment';
 import { EventBus } from './EventBus';
 import EventItem from './EventItem';
-import IsView from './mixins/IsView';
+import IsView from './mixins/IsMyView';
 import ShowsTimes from './mixins/ShowsTimes';
 import Event from '../model/Event';
 import config from '../utils/config';
@@ -129,12 +132,19 @@ export default {
   },
   mixins: [ IsView, ShowsTimes ],
   components: { EventItem },
+  computed: {
+    calendarTitle() {
+      const weekStart = moment(this.activeDate).day(0);
+      const weekEnd = moment(this.activeDate).day(13);
+      return weekStart.format('MMM D') + ' - ' + weekEnd.format('MMM D');
+    }
+  },
   data () {
     return {
       days: [],
       today: moment(),
       activeView: 'week',
-      activeDate: null,
+      activeDate: null
     }
   },
   mounted() {
@@ -144,6 +154,9 @@ export default {
   watch: {
     initialDate() {
       this.activeDate = moment(this.initialDate);
+    },
+    activeDate() {
+      this.buildCalendar();
     },
   },
   methods: {
@@ -155,7 +168,7 @@ export default {
 
       let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
       
-      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).week();
+      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 7, 'day' ).week();
       
       this.days = [];
 
@@ -188,12 +201,6 @@ export default {
 
           temp.add( 1, 'day' );
 
-          console.log(temp.format('ddd'));
-
-          console.log(temp.week());
-          
-          console.log(w);
-
       } while ( temp.week() <= w );
     },
     goToToday() {
@@ -206,6 +213,22 @@ export default {
     next() {
       const page = this.activeView;
       this.activeDate = moment(this.activeDate.add(1,  page+ 's'));
+    },
+    getSchedule(calenders, schedule){
+      for (let index = 0; index < calenders.length; index++) {
+        const element = calenders[index];
+        if( element.schedule_at == schedule ){
+          return element.client_id+' - '+element.client_name
+        }
+      }
+    },
+    isPreview(calenders, schedule){
+      for (let index = 0; index < calenders.length; index++) {
+        const element = calenders[index];
+        if( element.schedule_at == schedule ){
+          return element.is_preview
+        }
+      }
     },
   }
 }
@@ -244,11 +267,14 @@ td:first-child, th:first-child {
   z-index:1;
   /* background-color:#f4f8fb; */
 }
+td:first-child{
+  background-color:#f4f8fb;
+}
 thead tr th {
   position:sticky;
   top:0;
 }
 th:first-child {
-  z-index:2;background-color:#f9fbfd;
+  z-index:2;background-color:#f4f8fb;
 }
 </style>

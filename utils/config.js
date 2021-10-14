@@ -30,14 +30,14 @@ let config = {
         {
           name: 'Rohani Suhadi',
           type: 'Beginner',
-          dates: [
+          schedules: [
             '2021-10-11', '2021-10-12'
           ]
         },
         {
             name: 'Supriyanto',
             type: 'Beginner',
-            dates: [
+            schedules: [
               '2021-10-11', '2021-10-12', '2021-10-16'
             ]
         }
