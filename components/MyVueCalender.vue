@@ -135,7 +135,7 @@ export default {
   computed: {
     calendarTitle() {
       const weekStart = moment(this.activeDate).day(0);
-      const weekEnd = moment(this.activeDate).day(13);
+      const weekEnd = moment(this.activeDate).day(20);
       return weekStart.format('MMM D') + ' - ' + weekEnd.format('MMM D');
     }
   },
