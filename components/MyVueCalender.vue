@@ -20,9 +20,9 @@
         </thead>
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
-            <td>{{team.name}} ({{team.member}})</td>
-            <td v-for="(day, index) in days" v-bind:key="index" :class="{ 'bg-green-600': day.isToday, 'bg-orange-600' : (activeDate.format('YYYY-MM-DD') == day.d.format('YYYY-MM-DD')), 'bg-red-400' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
-              {{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}
+            <td>{{team.name}}</td>
+            <td v-for="(day, index) in days" v-bind:key="index" :class="{  'bg-orange-600' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
+              {{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }} 
             </td>
           </tr>
         </tbody>
@@ -160,6 +160,12 @@ export default {
     },
   },
   methods: {
+    close() {
+      setTimeout(() => {
+        this.$destroy();
+        this.$el.remove();
+      }, 150);
+    },
     buildCalendar() {
 
       this.days = [];
@@ -218,7 +224,7 @@ export default {
       for (let index = 0; index < calenders.length; index++) {
         const element = calenders[index];
         if( element.schedule_at == schedule ){
-          return element.client_id+' - '+element.client_name
+          return element.client_id+' - '+element.client_name+' (2)'
         }
       }
     },
