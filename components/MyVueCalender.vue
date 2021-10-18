@@ -21,8 +21,10 @@
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
             <td>{{team.name}}</td>
-            <td v-for="(day, index) in days" v-bind:key="index" :class="{  'bg-orange-600' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
-              {{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }} 
+            <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" :class="{  'bg-orange-600' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
+              <div class="w-full h-auto">
+                <span >{{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}</span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -135,7 +137,7 @@ export default {
   computed: {
     calendarTitle() {
       const weekStart = moment(this.activeDate).day(0);
-      const weekEnd = moment(this.activeDate).day(20);
+      const weekEnd = moment(this.activeDate).day(26);
       return weekStart.format('MMM D') + ' - ' + weekEnd.format('MMM D');
     }
   },
@@ -160,11 +162,16 @@ export default {
     },
   },
   methods: {
+    
     close() {
       setTimeout(() => {
         this.$destroy();
         this.$el.remove();
       }, 150);
+    },
+    openDialog(schedule){
+      console.log(schedule);
+      this.$emit('openForm', schedule)
     },
     buildCalendar() {
 
@@ -174,7 +181,7 @@ export default {
 
       let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
       
-      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 14, 'day' ).week();
+      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 21, 'day' ).week();
       
       this.days = [];
 
@@ -220,11 +227,24 @@ export default {
       const page = this.activeView;
       this.activeDate = moment(this.activeDate.add(1,  page+ 's'));
     },
+    getDefaultForm(team, day){
+      var data = team.schedules.find(x => x.schedule_at == day.d.format('YYYY-MM-DD') )
+      if( data )
+        return data
+      else{
+        return {
+          team: team.id,
+          schedule_at: day.d.format('YYYY-MM-DD'),
+          client_id: null,
+          schedule_id: null
+        }
+      }
+    },
     getSchedule(calenders, schedule){
       for (let index = 0; index < calenders.length; index++) {
         const element = calenders[index];
         if( element.schedule_at == schedule ){
-          return element.client_id+' - '+element.client_name+' (2)'
+          return element.client_id+' - '+element.client_name+' ('+element.member+')'
         }
       }
     },
