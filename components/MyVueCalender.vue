@@ -6,6 +6,7 @@
         <button class="v-cal-button" @click="prev">Back</button>
         <button class="v-cal-button" @click="next">Next</button>
       </div>
+      <slot/>
       <div class="v-cal-header__title-bar">
         <h3 class="v-cal-header__title">{{ calendarTitle }}</h3>
       </div>
@@ -170,7 +171,7 @@ export default {
       }, 150);
     },
     openDialog(schedule){
-      console.log(schedule);
+      // console.log(schedule);
       this.$emit('openForm', schedule)
     },
     buildCalendar() {
@@ -244,7 +245,7 @@ export default {
       for (let index = 0; index < calenders.length; index++) {
         const element = calenders[index];
         if( element.schedule_at == schedule ){
-          return element.client_id+' - '+element.client_name+' ('+element.member+')'
+          return element.client_id+' - '+element.client_name+' ('+element.number_of_member+')'
         }
       }
     },
