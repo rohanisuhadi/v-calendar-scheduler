@@ -22,9 +22,10 @@
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
             <td>{{team.name}}</td>
-            <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" :class="{  'bg-orange-600' : day.isSunday, 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
+            <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" :class="{  'bg-orange-600' : (day.isSunday || isHoliday(day) ), 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
               <div class="w-full h-auto">
-                <span >{{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}</span>
+                <span>{{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}</span>
+                <span class="text-white">{{ isHoliday(day) }}</span>
               </div>
             </td>
           </tr>
@@ -52,6 +53,10 @@ export default {
       teams: {
           type: Array,
           default: () => config.teams
+      },
+      publicHolidays: {
+          type: Array,
+          default: () => []
       },
       showTodayButton: {
           type: Boolean,
@@ -237,7 +242,8 @@ export default {
           team: team.id,
           schedule_at: day.d.format('YYYY-MM-DD'),
           client_id: null,
-          schedule_id: null
+          schedule_id: null,
+          is_all: false
         }
       }
     },
@@ -248,6 +254,15 @@ export default {
           return element.client_id+' - '+element.client_name+' ('+element.number_of_member+')'
         }
       }
+    },
+    isHoliday(day){
+      for (let index = 0; index < this.publicHolidays.length; index++) {
+        const element = this.publicHolidays[index];
+        if( day.d.format('YYYY-MM-DD') == element.holiday_on  ){
+          return element.description
+        }
+      }
+      return null
     },
     isPreview(calenders, schedule){
       for (let index = 0; index < calenders.length; index++) {
