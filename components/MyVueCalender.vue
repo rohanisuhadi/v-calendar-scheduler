@@ -38,8 +38,8 @@
 import moment from 'moment';
 import { EventBus } from './EventBus';
 import EventItem from './EventItem';
-import IsView from './mixins/IsMyView';
 import ShowsTimes from './mixins/ShowsTimes';
+import IsMyView from './mixins/IsMyView';
 import Event from '../model/Event';
 import config from '../utils/config';
 import { defaultLabels, defaultViews } from '../utils/config';
@@ -138,7 +138,7 @@ export default {
           default: () => { return {} }
       }
   },
-  mixins: [ IsView, ShowsTimes ],
+  mixins: [ IsMyView, ShowsTimes ],
   components: { EventItem },
   computed: {
     calendarTitle() {
