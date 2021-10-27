@@ -39,7 +39,7 @@ import moment from 'moment';
 import { EventBus } from './EventBus';
 import EventItem from './EventItem';
 import ShowsTimes from './mixins/ShowsTimes';
-import IsMyView from './mixins/IsMyView';
+// import IsMyView from './mixins/IsMyView';
 import Event from '../model/Event';
 import config from '../utils/config';
 import { defaultLabels, defaultViews } from '../utils/config';
@@ -138,7 +138,7 @@ export default {
           default: () => { return {} }
       }
   },
-  mixins: [ IsMyView, ShowsTimes ],
+  mixins: [ ShowsTimes ],
   components: { EventItem },
   computed: {
     calendarTitle() {
@@ -168,7 +168,12 @@ export default {
     },
   },
   methods: {
-    
+    isDayDisabled(day) {
+      if ( !this.minDate && !this.maxDate )
+          return false;
+      if ( this.minDate && this.minDate.isAfter(day, 'day') ) return true;
+      if ( this.maxDate && this.maxDate.isBefore(day, 'day') ) return true;
+    },
     close() {
       setTimeout(() => {
         this.$destroy();
