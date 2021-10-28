@@ -11,6 +11,15 @@
         <h3 class="v-cal-header__title">{{ calendarTitle }}</h3>
       </div>
     </div>
+    <div class="text-xxs mb-2 px-2">
+      <span>Calender Color and Initial Code</span> = 
+      Custom Cabinet (C) : Green,
+      Fit Out (F) : Yellow,
+      LED (L): Purple,
+      Service (S): Pink,
+      Supplement Order (SO) : Orange,
+      Top Table (T): Blue
+    </div>
     <div class="rounded body_page">
       <table>
         <thead>
@@ -21,11 +30,11 @@
         </thead>
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
-            <td>{{team.name}}</td>
-            <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" :class="{  'bg-orange-600' : (day.isSunday || isHoliday(day) ), 'bg-yellow-300': getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ), 'bg-green-400 text-white': isPreview(team.schedules, day.d.format('YYYY-MM-DD') ) }">
-              <div class="w-full h-auto">
+            <td><span class="text-sm">{{team.name}}</span><br/><span class="text-xs">{{team.type}}</span></td>
+            <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" v-bind:class="[{  'bg-gray-200' : (day.isSunday || isHoliday(day) ) }, getColor(team.schedules, day.d.format('YYYY-MM-DD') )]" >
+              <div class="w-full h-auto" :class="{'text-center' : isHoliday(day)}">
                 <span>{{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}</span>
-                <span class="text-white">{{ isHoliday(day) }}</span>
+                <span class="text-black text-center">{{ isHoliday(day) }}</span>
               </div>
             </td>
           </tr>
@@ -39,7 +48,6 @@ import moment from 'moment';
 import { EventBus } from './EventBus';
 import EventItem from './EventItem';
 import ShowsTimes from './mixins/ShowsTimes';
-// import IsMyView from './mixins/IsMyView';
 import Event from '../model/Event';
 import config from '../utils/config';
 import { defaultLabels, defaultViews } from '../utils/config';
@@ -256,7 +264,36 @@ export default {
       for (let index = 0; index < calenders.length; index++) {
         const element = calenders[index];
         if( element.schedule_at == schedule ){
-          return element.client_id+' - '+element.client_name+' ('+element.number_of_member+')'
+          return element.client_id+' - '+element.client_name+' ('+element.number_of_member+') - ('+element.category+') '+`${(element.remark) ? element.remark : ''}`
+        }
+      }
+    },
+    getColor(calenders, schedule){
+      for (let index = 0; index < calenders.length; index++) {
+        const element = calenders[index];
+        if( element.schedule_at == schedule ){
+          switch (element.category) {
+            case 'C':
+              return 'bg-green-600 text-white';
+              break;
+            case 'F':
+              return 'bg-yellow-400 text-white';
+              break;
+            case 'SO':
+              return 'bg-orange-600 text-white';
+              break;
+            case 'S':
+              return 'bg-pink-600 text-white';
+              break;
+            case 'L':
+              return 'bg-purple-900 text-white';
+              break;
+            case 'T':
+              return 'bg-blue-500 text-white';
+              break;
+            default:
+              break;
+          }
         }
       }
     },
