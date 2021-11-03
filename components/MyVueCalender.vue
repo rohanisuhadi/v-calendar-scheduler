@@ -294,7 +294,7 @@ export default {
               return 'bg-blue-500 text-white';
               break;
             default:
-              return 'bg-purple-500 text-white';
+              return 'bg-purple-900 text-white';
               break;
           }
         }
