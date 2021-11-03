@@ -15,7 +15,6 @@
       <span>Calender Color and Initial Code</span> = 
       Custom Cabinet (C) : Green,
       Fit Out (F) : Yellow,
-      LED (L): Purple,
       Service (S): Pink,
       Supplement Order (SO) : Orange,
       Top Table (T): Blue
