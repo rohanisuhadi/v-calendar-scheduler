@@ -194,14 +194,14 @@ export default {
     },
     buildCalendar() {
 
-      this.days = [];
-
       let now = moment();
-
       let temp = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek());
-      
-      let w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 21, 'day' ).week();
-      
+      var w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).add( 21, 'day' ).week();
+      var diff = 0;
+      if( temp.week() > w  ){
+        w = moment( this.activeDate ).day(moment.localeData().firstDayOfWeek()).weeksInYear();
+        diff = 3 - (w - temp.week());
+      }
       this.days = [];
 
       do {
@@ -232,7 +232,9 @@ export default {
           this.days.push(newDay);
 
           temp.add( 1, 'day' );
-
+          /* switch for new year */
+          if( diff > 0 && temp.week() == 1 )
+            w = diff;
       } while ( temp.week() <= w );
     },
     goToToday() {
