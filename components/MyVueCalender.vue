@@ -31,7 +31,7 @@
           <tr v-for="(team, index) in teams" v-bind:key="index">
             <td>
               <span class="text-sm">{{team.name}}</span><br/>
-              <span class="text-xs">{{team.type}}</span>
+              <span class="text-xs">{{team.type}}</span><br/>
               <span class="text-xs">{{team.category_names}}</span>
             </td>
             <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" v-bind:class="[{  'bg-gray-200' : (day.isSunday || isHoliday(day) ) }, getColor(team.schedules, day.d.format('YYYY-MM-DD') )]" >
