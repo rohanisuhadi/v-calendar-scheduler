@@ -29,7 +29,11 @@
         </thead>
         <tbody>
           <tr v-for="(team, index) in teams" v-bind:key="index">
-            <td><span class="text-sm">{{team.name}}</span><br/><span class="text-xs">{{team.type}}</span></td>
+            <td>
+              <span class="text-sm">{{team.name}}</span><br/>
+              <span class="text-xs">{{team.type}}</span>
+              <span class="text-xs">{{team.category_names}}</span>
+            </td>
             <td @click="openDialog( getDefaultForm(team, day)  )" v-for="(day, index) in days" v-bind:key="index" class="cursor-pointer" v-bind:class="[{  'bg-gray-200' : (day.isSunday || isHoliday(day) ) }, getColor(team.schedules, day.d.format('YYYY-MM-DD') )]" >
               <div class="w-full h-auto" :class="{'text-center' : isHoliday(day)}">
                 <span>{{ getSchedule(team.schedules, day.d.format('YYYY-MM-DD') ) }}</span>
@@ -188,7 +192,6 @@ export default {
       }, 150);
     },
     openDialog(schedule){
-      // console.log(schedule);
       this.$emit('openForm', schedule)
     },
     buildCalendar() {
@@ -249,11 +252,14 @@ export default {
     },
     getDefaultForm(team, day){
       var data = team.schedules.find(x => x.schedule_at == day.d.format('YYYY-MM-DD') )
-      if( data )
+      if( data ){
+        data.category_codes = team.category_codes
         return data
+      }
       else{
         return {
           team: team.id,
+          category_codes: team.category_codes,
           schedule_at: day.d.format('YYYY-MM-DD'),
           client_id: null,
           schedule_id: null,
