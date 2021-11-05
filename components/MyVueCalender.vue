@@ -260,6 +260,7 @@ export default {
         return {
           team: team.id,
           category_codes: team.category_codes,
+          installers: team.installers,
           schedule_at: day.d.format('YYYY-MM-DD'),
           client_id: null,
           schedule_id: null,
@@ -271,7 +272,7 @@ export default {
       for (let index = 0; index < calenders.length; index++) {
         const element = calenders[index];
         if( element.schedule_at == schedule ){
-          return element.client_id+' - '+element.client_name+' ('+element.number_of_member+') - ('+element.category+') '+`${(element.remark) ? element.remark : ''}`
+          return element.clients+' - '+element.client_name+' ('+element.number_of_member+') - ('+element.category+') '+`${(element.remark) ? element.remark : ''}`
         }
       }
     },
