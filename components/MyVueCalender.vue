@@ -16,6 +16,7 @@
       Custom Cabinet (C) : Green,
       Fit Out (F) : Yellow,
       Service (S): Pink,
+      Supervise (SV) : Red,
       Supplement Order (SO) : Orange,
       Top Table (T): Blue
     </div>
@@ -298,6 +299,9 @@ export default {
               break;
             case 'T':
               return 'bg-blue-500 text-white';
+              break;
+            case 'SV':
+              return 'bg-red-700 text-white';
               break;
             default:
               return 'bg-purple-900 text-white';
